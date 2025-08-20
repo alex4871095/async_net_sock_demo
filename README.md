@@ -1,0 +1,222 @@
+Test task log:
+
+alex@Linux:~/lcd/tt$ ./tcp_server cafe::3 12345
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+^C
+alex@Linux:~/lcd/tt$ ./tcp_server cafe::3 12345
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+Receiving msg from middleware client: ABCDSome important message from source
+^C
+alex@Linux:~/lcd/tt$ 
+
+
+alex@Linux:~/lcd/tt$ ./udp_client cafe::2 12345
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+Sending msg to middleware server: Some important message from source
+^C
+alex@Linux:~/lcd/tt$ 
+
+
+alex@Linux:~/lcd/tt$ ./mediator cafe::2 12345 cafe::3 12345 logfile ABCD
+Working hard asynchronously forwarding data from udp client to tcp server
+^C
+alex@Linux:~/lcd/tt$ 
+
+
+alex@Linux:~/lcd/tt$ ip addr show dev lo1
+3: lo1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/ether ca:c1:c7:8b:b5:63 brd ff:ff:ff:ff:ff:ff
+    inet6 cafe::1/128 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c8c1:c7ff:fe8b:b563/64 scope link 
+       valid_lft forever preferred_lft forever
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ ip addr show dev lo2
+4: lo2: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/ether 62:7b:a0:9c:0d:9c brd ff:ff:ff:ff:ff:ff
+    inet6 cafe::2/128 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::607b:a0ff:fe9c:d9c/64 scope link 
+       valid_lft forever preferred_lft forever
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ ip addr show dev lo3
+5: lo3: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/ether ae:ba:ef:2d:e9:84 brd ff:ff:ff:ff:ff:ff
+    inet6 cafe::3/128 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::acba:efff:fe2d:e984/64 scope link 
+       valid_lft forever preferred_lft forever
+alex@Linux:~/lcd/tt$ 
+
+
+alex@Linux:~/lcd/tt$ ls
+Makefile  mediator.c  tcp_server.c  udp_client.c
+alex@Linux:~/lcd/tt$ make
+gcc mediator.c -o mediator
+gcc udp_client.c -o udp_client
+gcc tcp_server.c -o tcp_server
+alex@Linux:~/lcd/tt$ ls
+Makefile  mediator  mediator.c  tcp_server  tcp_server.c  udp_client  udp_client.c
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ netstat -na | grep udp
+udp        0      0 10.0.2.15:68            10.0.2.2:67             ESTABLISHED
+udp        0      0 0.0.0.0:5353            0.0.0.0:*                          
+udp        0      0 0.0.0.0:42273           0.0.0.0:*                          
+udp        0      0 0.0.0.0:631             0.0.0.0:*                          
+udp6       0      0 cafe::2:12345           :::*                               
+udp6       0      0 :::5353                 :::*                               
+udp6       0      0 cafe::2:57623           cafe::2:12345           ESTABLISHED
+udp6       0      0 :::56069                :::*                               
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ netstat -na | grep tcp
+tcp        0      0 0.0.0.0:3580            0.0.0.0:*               LISTEN     
+tcp        0      0 127.0.0.1:631           0.0.0.0:*               LISTEN     
+tcp6       0      0 ::1:631                 :::*                    LISTEN     
+tcp6       0      0 cafe::3:12345           :::*                    LISTEN     
+tcp6       0      0 cafe::3:52994           cafe::3:12345           ESTABLISHED
+tcp6       0      0 cafe::3:12345           cafe::3:52994           ESTABLISHED
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ netstat -na | grep udp
+udp        0      0 10.0.2.15:68            10.0.2.2:67             ESTABLISHED
+udp        0      0 0.0.0.0:5353            0.0.0.0:*                          
+udp        0      0 0.0.0.0:42273           0.0.0.0:*                          
+udp        0      0 0.0.0.0:631             0.0.0.0:*                          
+udp6       0      0 cafe::2:12345           :::*                               
+udp6       0      0 :::5353                 :::*                               
+udp6       0      0 cafe::2:57623           cafe::2:12345           ESTABLISHED
+udp6       0      0 :::56069                :::*                               
+alex@Linux:~/lcd/tt$ netstat -na | grep tcp
+tcp        0      0 0.0.0.0:3580            0.0.0.0:*               LISTEN     
+tcp        0      0 127.0.0.1:631           0.0.0.0:*               LISTEN     
+tcp6       0      0 ::1:631                 :::*                    LISTEN     
+tcp6       0      0 cafe::3:12345           :::*                    LISTEN     
+tcp6       0      0 cafe::3:52994           cafe::3:12345           CLOSE_WAIT 
+tcp6       0      0 cafe::3:37302           cafe::3:12345           ESTABLISHED
+tcp6       0      0 cafe::3:12345           cafe::3:52994           FIN_WAIT2  
+tcp6       0      0 cafe::3:12345           cafe::3:37302           ESTABLISHED
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ tail -f logfile 
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+^C
+alex@Linux:~/lcd/tt$ 
+alex@Linux:~/lcd/tt$ cat logfile 
+Thread started for recv
+Thread started for send
+UDP server started
+Start polling in recv thread
+Connected to remote TCP server
+Start polling in send thread
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+Got msg from TCP server
+TCP connection closed, restarting
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+Connected to remote TCP server
+Start polling in send thread
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+UDP RX: (34) 536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+TCP TX: (38) 41424344536F6D6520696D706F7274616E74206D6573736167652066726F6D20736F75726365
+Got msg from TCP server
+TCP connection closed, restarting
+alex@Linux:~/lcd/tt$ 
+
+
+
+
