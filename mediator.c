@@ -456,6 +456,8 @@ int main (int argc, char **argv)
   pthread_join(receiving_thread, NULL);
   pthread_join(sending_thread, NULL);
 
+  close(fd);
+
   return 0;
 }
 
